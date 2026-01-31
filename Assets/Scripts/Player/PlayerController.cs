@@ -5,45 +5,59 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     public float walkSpeed = 5f;
     public float crouchSpeed = 2.5f;
-    
+
+    [Header("References")]
+    public PlayerAnimator playerAnimator;  // assign in Inspector
+
+    private Rigidbody2D rb;
     private float currentSpeed;
     private bool isCrouching = false;
-    
+    private Vector2 movement;
+
     void Start()
     {
         currentSpeed = walkSpeed;
+        rb = GetComponent<Rigidbody2D>();
+
+        // Auto-find PlayerAnimator if not assigned
+        if (playerAnimator == null)
+        {
+            playerAnimator = GetComponent<PlayerAnimator>();
+        }
     }
-    
+
     void Update()
     {
         HandleCrouchInput();
-        HandleMovement();
+        HandleMovementInput();
     }
-    
+
+    void FixedUpdate()
+    {
+        // Use Rigidbody2D for physics-based movement (better for collisions)
+        rb.MovePosition(rb.position + movement * currentSpeed * Time.fixedDeltaTime);
+    }
+
     void HandleCrouchInput()
     {
-        // Toggle crouch with left ctrl key
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             isCrouching = !isCrouching;
             currentSpeed = isCrouching ? crouchSpeed : walkSpeed;
         }
     }
-    
-    void HandleMovement()
+
+    void HandleMovementInput()
     {
-        // Get input
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
-        
-        // Create movement vector
-        Vector2 movement = new Vector2(horizontal, vertical);
-        
-        // Normalize to prevent faster diagonal movement
-        // should implelemnt diagonal later
-        movement = movement.normalized;
-        
-        // Apply movement
-        transform.Translate(movement * currentSpeed * Time.deltaTime);
+        movement.x = Input.GetAxisRaw("Horizontal");
+        movement.y = Input.GetAxisRaw("Vertical");
+
+        if (movement.magnitude > 1f)
+        {
+            movement = movement.normalized;
+        }
+
+        // Update animations
+        playerAnimator.UpdateAnimation(movement);
     }
 }
