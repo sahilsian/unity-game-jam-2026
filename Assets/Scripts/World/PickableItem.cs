@@ -26,11 +26,12 @@ public class PickableItem : MonoBehaviour
 
     private void Pickup()
     {
-        if (item == null) return;
-
-        // Inventory hook goes here
-        // Inventory.Instance.Add(item, amount);
-
+        if (item == null)
+        {
+            Debug.Log("could not pick up");
+        }
+        ;
+        Debug.Log("PICKED UP: ", item);
         onPickedUp?.Invoke(item, amount);
 
         if (destroyOnPickup)
