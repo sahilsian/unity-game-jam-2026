@@ -36,10 +36,11 @@ public class PlayerController : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
         
-        // Create movement vector (no Z since it's 2D top-down)
+        // Create movement vector
         Vector2 movement = new Vector2(horizontal, vertical);
         
         // Normalize to prevent faster diagonal movement
+        // should implelemnt diagonal later
         movement = movement.normalized;
         
         // Apply movement
