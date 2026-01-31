@@ -1,237 +1,78 @@
-// Store what masks the player has collected
-// store what mask is currently equipped
-// handle equipping and unequipping masks
-// What does each mask do? 
-
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MaskSystem : MonoBehaviour
 {
-    public enum MaskType
-    {
-        None,
-        Red,
-        Blue,
-        Green,
-        Yellow
-    }
-    
-    [Header("References")]
-    public Animator maskAnimator;
-    public SpriteRenderer maskRenderer;
-    
-    [Header("Mask Animator Controllers")]
-    public RuntimeAnimatorController redMaskController;
-    public RuntimeAnimatorController blueMaskController;
-    public RuntimeAnimatorController greenMaskController;
-    public RuntimeAnimatorController yellowMaskController;
-    
-    [Header("Mask Sprites (for UI/inventory)")]
-    public Sprite redMaskSprite;
-    public Sprite blueMaskSprite;
-    public Sprite greenMaskSprite;
-    public Sprite yellowMaskSprite;
-    
-    [Header("Current State")]
-    public MaskType currentMask = MaskType.None;
-    
-    [Header("Unlocked Masks")]
-    public bool hasRedMask = false;
-    public bool hasBlueMask = false;
-    public bool hasGreenMask = false;
-    public bool hasYellowMask = false;
+    [Header("Mask Items (assign the 4 Item assets)")]
+    [SerializeField] private Item redMask;
+    [SerializeField] private Item blueMask;
+    [SerializeField] private Item greenMask;
+    [SerializeField] private Item goldMask;
 
-    void Start()
+    // Store owned masks by id
+    private readonly HashSet<string> ownedMaskIds = new HashSet<string>();
+
+    public Item CurrentMask { get; private set; }
+
+    // HUD listens to this
+    public event Action OnChanged;
+
+    // ---------- Public API ----------
+
+    public bool IsMaskItem(Item item)
     {
-        // Try to load sprites from Assets/Art/Items
-        if (redMaskSprite == null)
-            redMaskSprite = Resources.Load<Sprite>("Art/Items/red-mask");
-        if (blueMaskSprite == null)
-            blueMaskSprite = Resources.Load<Sprite>("Art/Items/blue-mask");
-        if (greenMaskSprite == null)
-            greenMaskSprite = Resources.Load<Sprite>("Art/Items/green-mask");
-        if (yellowMaskSprite == null)
-            yellowMaskSprite = Resources.Load<Sprite>("Art/Items/yellow-mask");
-            
-        Debug.Log("Red mask loaded: " + (redMaskSprite != null));
-        private Vector2 lastDirection = Vector2.down;
-        private bool isMoving = false;
-            // Hide mask at start if none equipped
-        if (maskRenderer != null && currentMask == MaskType.None)
-        {
-            maskRenderer.enabled = false;
-        }
+        if (item == null) return false;
+        return item.id == "redMask" || item.id == "blueMask" || item.id == "greenMask" || item.id == "goldMask";
     }
 
-    
-    void Update()
+    public bool HasMask(string id) => ownedMaskIds.Contains(id);
+
+    public Item GetMaskItem(string id)
     {
-        HandleMaskSwitching();
+        return id switch
+        {
+            "redMask" => redMask,
+            "blueMask" => blueMask,
+            "greenMask" => greenMask,
+            "goldMask" => goldMask,
+            _ => null
+        };
     }
-    
-    void HandleMaskSwitching()
+
+    // Call this from pickup
+    public void Add(Item item)
     {
-        // Press same key to toggle off
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            if (hasRedMask)
-                ToggleMask(MaskType.Red);
-        }
-        
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            if (hasBlueMask)
-                ToggleMask(MaskType.Blue);
-        }
-            
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            if (hasGreenMask)
-                ToggleMask(MaskType.Green);
-        }
-            
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            if (hasYellowMask)
-                ToggleMask(MaskType.Yellow);
-        }
-        
-        // Press 0 or Q to remove mask
-        if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Q))
-        {
-            RemoveMask();
-        }
-    }
-    
-    void ToggleMask(MaskType maskType)
-    {
-        if (currentMask == maskType)
-        {
-            RemoveMask();
-        }
-        else
-        {
-            EquipMask(maskType);
-        }
-    }
-    
-public void EquipMask(MaskType maskType)
-{
-    currentMask = maskType;
-    
-    RuntimeAnimatorController controller = GetMaskController(maskType);
-    
-    if (controller != null && maskAnimator != null)
-    {
-        maskRenderer.enabled = true;
-        maskAnimator.runtimeAnimatorController = controller;
-        
-        // Force down direction immediately
-        maskAnimator.SetFloat("MoveX", 0f);
-        maskAnimator.SetFloat("MoveY", -1f);
-        maskAnimator.SetBool("IsMoving", false);
-        
-        // Force animator to update
-        maskAnimator.Update(0f);
-        
-        // Then apply actual current state
-        UpdateMaskAnimation(lastDirection, isMoving);
-    }
-    
-    Debug.Log("Equipped: " + maskType + " mask");
-}
-    
-    public void RemoveMask()
-    {
-        currentMask = MaskType.None;
-        
-        if (maskRenderer != null)
-        {
-            maskRenderer.enabled = false;
-        }
-        
-        Debug.Log("Removed mask");
-    }
-    
-    // Called by PlayerAnimator to sync mask with body
-    public void UpdateMaskAnimation(Vector2 direction, bool moving)
-    {
-        lastDirection = direction;
-        isMoving = moving;
-        
-        if (maskAnimator == null || currentMask == MaskType.None)
+        if (item == null) return;
+
+        if (!IsMaskItem(item))
             return;
-        
-        // Hide mask when facing up (back of head)
-        bool facingUp = direction.y > 0.2f && Mathf.Abs(direction.x) < 0.2f;
-        maskRenderer.enabled = !facingUp;
-        
-        if (facingUp)
-            return;
-        
-        // Sync animation with body
-        maskAnimator.SetFloat("MoveX", direction.x);
-        maskAnimator.SetFloat("MoveY", direction.y);
-        maskAnimator.SetBool("IsMoving", moving);
-        
-        // Match body animator speed
-        maskAnimator.speed = moving ? 1f : 0f;
+
+        bool wasNew = ownedMaskIds.Add(item.id);
+
+        // Optional: auto-equip first time you pick it up
+        if (wasNew && CurrentMask == null)
+            CurrentMask = item;
+
+        OnChanged?.Invoke();
     }
-    
-    public void CollectMask(MaskType maskType)
+
+    public bool TryEquip(string id)
     {
-        switch (maskType)
-        {
-            case MaskType.Red:
-                hasRedMask = true;
-                break;
-            case MaskType.Blue:
-                hasBlueMask = true;
-                break;
-            case MaskType.Green:
-                hasGreenMask = true;
-                break;
-            case MaskType.Yellow:
-                hasYellowMask = true;
-                break;
-        }
-        
-        Debug.Log("Collected: " + maskType + " mask");
+        if (!HasMask(id)) return false;
+
+        var item = GetMaskItem(id);
+        if (item == null) return false;
+
+        CurrentMask = item;
+        OnChanged?.Invoke();
+        return true;
     }
-    
-    public RuntimeAnimatorController GetMaskController(MaskType maskType)
+
+    // Convenience: equip by passing the Item directly
+    public bool TryEquip(Item item)
     {
-        switch (maskType)
-        {
-            case MaskType.Red: return redMaskController;
-            case MaskType.Blue: return blueMaskController;
-            case MaskType.Green: return greenMaskController;
-            case MaskType.Yellow: return yellowMaskController;
-            default: return null;
-        }
-    }
-    
-    public Sprite GetMaskSprite(MaskType maskType)
-    {
-        switch (maskType)
-        {
-            case MaskType.Red: return redMaskSprite;
-            case MaskType.Blue: return blueMaskSprite;
-            case MaskType.Green: return greenMaskSprite;
-            case MaskType.Yellow: return yellowMaskSprite;
-            default: return null;
-        }
-    }
-    
-    public bool HasMask(MaskType maskType)
-    {
-        switch (maskType)
-        {
-            case MaskType.Red: return hasRedMask;
-            case MaskType.Blue: return hasBlueMask;
-            case MaskType.Green: return hasGreenMask;
-            case MaskType.Yellow: return hasYellowMask;
-            default: return false;
-        }
+        if (item == null) return false;
+        return TryEquip(item.id);
     }
 }

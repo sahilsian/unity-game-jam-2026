@@ -4,73 +4,63 @@ using UnityEngine.UI;
 public class HUDController : MonoBehaviour
 {
     [Header("References")]
-    public MaskSystem maskSystem;
-    
+    [SerializeField] private MaskSystem maskSystem;
+
     [Header("UI Mask Slots")]
-    public Image redMaskSlot;
-    public Image blueMaskSlot;
-    public Image greenMaskSlot;
-    public Image yellowMaskSlot;
-    
+    [SerializeField] private Image redMaskSlot;
+    [SerializeField] private Image blueMaskSlot;
+    [SerializeField] private Image greenMaskSlot;
+    [SerializeField] private Image goldMaskSlot;
+
     [Header("Visual Settings")]
-    public Color lockedColor = new Color(0.3f, 0.3f, 0.3f, 0.5f);
-    public Color unlockedColor = Color.white;
-    public Color activeColor = Color.yellow;
-    
-    void Start()
+    [SerializeField] private Color lockedColor = new Color(0.3f, 0.3f, 0.3f, 0.5f);
+    [SerializeField] private Color unlockedColor = Color.white;
+    [SerializeField] private Color activeColor = Color.yellow;
+
+    private void OnEnable()
     {
-        // Initial HUD setup
+        if (maskSystem != null)
+            maskSystem.OnChanged += UpdateHUD;
+    }
+
+    private void OnDisable()
+    {
+        if (maskSystem != null)
+            maskSystem.OnChanged -= UpdateHUD;
+    }
+
+    private void Start()
+    {
         if (maskSystem == null)
         {
-            Debug.LogError("MaskSystem reference is missing! Please assign it in the Inspector.");
+            Debug.LogError("HUDController is missing MaskSystem reference.", this);
             return;
         }
-        
+
         UpdateHUD();
     }
-    
-    void Update()
-    {
-        // Continuously update the HUD to reflect current mask state
-        UpdateHUD();
-    }
-    
-    void UpdateHUD()
+
+    private void UpdateHUD()
     {
         if (maskSystem == null) return;
-        
-        // Update each mask slot
-        UpdateMaskSlot(redMaskSlot, MaskSystem.MaskType.Red);
-        UpdateMaskSlot(blueMaskSlot, MaskSystem.MaskType.Blue);
-        UpdateMaskSlot(greenMaskSlot, MaskSystem.MaskType.Green);
-        UpdateMaskSlot(yellowMaskSlot, MaskSystem.MaskType.Yellow);
+
+        UpdateSlot(redMaskSlot, "redMask");
+        UpdateSlot(blueMaskSlot, "blueMask");
+        UpdateSlot(greenMaskSlot, "greenMask");
+        UpdateSlot(goldMaskSlot, "goldMask");
     }
-    
-    void UpdateMaskSlot(Image slotImage, MaskSystem.MaskType maskType)
+
+    private void UpdateSlot(Image slot, string id)
     {
-        if (slotImage == null) return;
-        
-        // Set the sprite from MaskSystem
-        slotImage.sprite = maskSystem.GetMaskSprite(maskType);
-        
-        // Check if this mask is unlocked
-        bool isUnlocked = maskSystem.HasMask(maskType);
-        
-        // Set the color based on state
-        if (!isUnlocked)
-        {
-            // Locked/not collected yet - grayed out
-            slotImage.color = lockedColor;
-        }
-        else if (maskSystem.currentMask == maskType)
-        {
-            // Currently active mask - highlighted
-            slotImage.color = activeColor;
-        }
-        else
-        {
-            // Unlocked but not active - normal color
-            slotImage.color = unlockedColor;
-        }
+        if (slot == null) return;
+
+        Item item = maskSystem.GetMaskItem(id);
+        slot.sprite = item != null ? item.icon : null;
+
+        bool unlocked = maskSystem.HasMask(id);
+
+        if (!unlocked) slot.color = lockedColor;
+        else if (maskSystem.CurrentMask != null && maskSystem.CurrentMask.id == id) slot.color = activeColor;
+        else slot.color = unlockedColor;
     }
 }
