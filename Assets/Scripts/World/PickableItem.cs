@@ -31,7 +31,7 @@ public class PickableItem : MonoBehaviour
             Debug.Log("could not pick up");
         }
         ;
-        Debug.Log("PICKED UP: ", item);
+        Debug.Log($"PickableItem: picked up {item.title} ({item.id}) x{amount}", this);
         onPickedUp?.Invoke(item, amount);
 
         if (destroyOnPickup)

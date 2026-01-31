@@ -1,98 +1,78 @@
-// Store what masks the player has collected
-// store what mask is currently equipped
-// handle equipping and unequipping masks
-// What does each mask do? 
-
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MaskSystem : MonoBehaviour
 {
-    public enum MaskType
-    {
-        None,
-        Red,
-        Blue,
-        Green,
-        Yellow
-    }
-    
-    [Header("Mask Sprites")]
-    public Sprite redMaskSprite;
-    public Sprite blueMaskSprite;
-    public Sprite greenMaskSprite;
-    public Sprite yellowMaskSprite;
-    
-    [Header("Current State")]
-    public MaskType currentMask = MaskType.None;
-    
-    [Header("Unlocked Masks")]
-    public bool hasRedMask = false;
-    public bool hasBlueMask = false;
-    public bool hasGreenMask = false;
-    public bool hasYellowMask = false;
+    [Header("Mask Items (assign the 4 Item assets)")]
+    [SerializeField] private Item redMask;
+    [SerializeField] private Item blueMask;
+    [SerializeField] private Item greenMask;
+    [SerializeField] private Item goldMask;
 
-    void Start()
+    // Store owned masks by id
+    private readonly HashSet<string> ownedMaskIds = new HashSet<string>();
+
+    public Item CurrentMask { get; private set; }
+
+    // HUD listens to this
+    public event Action OnChanged;
+
+    // ---------- Public API ----------
+
+    public bool IsMaskItem(Item item)
     {
-        // Try to load sprites from Assets/Art/Items
-        if (redMaskSprite == null)
-            redMaskSprite = Resources.Load<Sprite>("Art/Items/red-mask");
-        if (blueMaskSprite == null)
-            blueMaskSprite = Resources.Load<Sprite>("Art/Items/blue-mask");
-        if (greenMaskSprite == null)
-            greenMaskSprite = Resources.Load<Sprite>("Art/Items/green-mask");
-        if (yellowMaskSprite == null)
-            yellowMaskSprite = Resources.Load<Sprite>("Art/Items/yellow-mask");
-            
-        Debug.Log("Red mask loaded: " + (redMaskSprite != null));
+        if (item == null) return false;
+        return item.id == "redMask" || item.id == "blueMask" || item.id == "greenMask" || item.id == "goldMask";
     }
-    
-    void Update()
+
+    public bool HasMask(string id) => ownedMaskIds.Contains(id);
+
+    public Item GetMaskItem(string id)
     {
-        HandleMaskSwitching();
-    }
-    
-    void HandleMaskSwitching()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1) && hasRedMask)
-            SwitchMask(MaskType.Red);
-        
-        if (Input.GetKeyDown(KeyCode.Alpha2) && hasBlueMask)
-            SwitchMask(MaskType.Blue);
-            
-        if (Input.GetKeyDown(KeyCode.Alpha3) && hasGreenMask)
-            SwitchMask(MaskType.Green);
-            
-        if (Input.GetKeyDown(KeyCode.Alpha4) && hasYellowMask)
-            SwitchMask(MaskType.Yellow);
-    }
-    
-    void SwitchMask(MaskType newMask)
-    {
-        currentMask = newMask;
-        Debug.Log("Switched to: " + newMask + " mask");
-    }
-    
-    public Sprite GetMaskSprite(MaskType maskType)
-    {
-        switch (maskType)
+        return id switch
         {
-            case MaskType.Red: return redMaskSprite;
-            case MaskType.Blue: return blueMaskSprite;
-            case MaskType.Green: return greenMaskSprite;
-            case MaskType.Yellow: return yellowMaskSprite;
-            default: return null;
-        }
+            "redMask" => redMask,
+            "blueMask" => blueMask,
+            "greenMask" => greenMask,
+            "goldMask" => goldMask,
+            _ => null
+        };
     }
-    
-    public bool HasMask(MaskType maskType)
+
+    // Call this from pickup
+    public void Add(Item item)
     {
-        switch (maskType)
-        {
-            case MaskType.Red: return hasRedMask;
-            case MaskType.Blue: return hasBlueMask;
-            case MaskType.Green: return hasGreenMask;
-            case MaskType.Yellow: return hasYellowMask;
-            default: return false;
-        }
+        if (item == null) return;
+
+        if (!IsMaskItem(item))
+            return;
+
+        bool wasNew = ownedMaskIds.Add(item.id);
+
+        // Optional: auto-equip first time you pick it up
+        if (wasNew && CurrentMask == null)
+            CurrentMask = item;
+
+        OnChanged?.Invoke();
+    }
+
+    public bool TryEquip(string id)
+    {
+        if (!HasMask(id)) return false;
+
+        var item = GetMaskItem(id);
+        if (item == null) return false;
+
+        CurrentMask = item;
+        OnChanged?.Invoke();
+        return true;
+    }
+
+    // Convenience: equip by passing the Item directly
+    public bool TryEquip(Item item)
+    {
+        if (item == null) return false;
+        return TryEquip(item.id);
     }
 }
