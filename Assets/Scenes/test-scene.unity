@@ -172,7 +172,19 @@ MonoBehaviour:
   destroyOnPickup: 1
   onPickedUp:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 566179733}
+        m_TargetAssemblyTypeName: PickupToMaskSystem, Assembly-CSharp
+        m_MethodName: OnPickedUp
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!61 &81534397
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -331,7 +343,19 @@ MonoBehaviour:
   destroyOnPickup: 1
   onPickedUp:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 566179733}
+        m_TargetAssemblyTypeName: PickupToMaskSystem, Assembly-CSharp
+        m_MethodName: OnPickedUp
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!61 &148375945
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1556,6 +1580,7 @@ GameObject:
   - component: {fileID: 566179728}
   - component: {fileID: 566179727}
   - component: {fileID: 566179732}
+  - component: {fileID: 566179733}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1693,10 +1718,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b886bce284e9d064eb950d5f334ddb5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskSystem
-  redMask: {fileID: 0}
-  blueMask: {fileID: 0}
-  greenMask: {fileID: 0}
-  goldMask: {fileID: 0}
+  redMask: {fileID: 11400000, guid: db673d22b60612f49bf843a406d4542f, type: 2}
+  blueMask: {fileID: 11400000, guid: 1a83def618a081345a126e1aeb3f2dc5, type: 2}
+  greenMask: {fileID: 11400000, guid: ddc7ae32399aad14eb9139694bfbb50d, type: 2}
+  goldMask: {fileID: 11400000, guid: 65ad0bc4d2bb62f4bb40877eb0f85927, type: 2}
+--- !u!114 &566179733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 566179726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e768cd5f35a5ca14f8d2dc8a1001fe65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PickupToMaskSystem
+  maskSystem: {fileID: 566179732}
 --- !u!1 &754245930
 GameObject:
   m_ObjectHideFlags: 0
@@ -2850,7 +2888,7 @@ MonoBehaviour:
   redMaskSlot: {fileID: 754245934}
   blueMaskSlot: {fileID: 779388282}
   greenMaskSlot: {fileID: 1829325241}
-  goldMaskSlot: {fileID: 0}
+  goldMaskSlot: {fileID: 381455146}
   lockedColor: {r: 0.3, g: 0.3, b: 0.3, a: 0.5}
   unlockedColor: {r: 1, g: 1, b: 1, a: 1}
   activeColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
@@ -2922,7 +2960,19 @@ MonoBehaviour:
   destroyOnPickup: 1
   onPickedUp:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 566179733}
+        m_TargetAssemblyTypeName: PickupToMaskSystem, Assembly-CSharp
+        m_MethodName: OnPickedUp
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!61 &1473935471
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3261,7 +3311,19 @@ MonoBehaviour:
   destroyOnPickup: 1
   onPickedUp:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 566179733}
+        m_TargetAssemblyTypeName: PickupToMaskSystem, Assembly-CSharp
+        m_MethodName: OnPickedUp
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!61 &1973795662
 BoxCollider2D:
   m_ObjectHideFlags: 0
