@@ -61,18 +61,4 @@ public class EnemyBase : MonoBehaviour
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle);
     }
-
-    protected virtual void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            KillPlayer(collision.gameObject);
-        }
-    }
-
-    protected virtual void KillPlayer(GameObject player)
-    {
-        Debug.Log("The Enemy caught the player! GAME OVER.");
-        player.SetActive(false);
-    }
 }
