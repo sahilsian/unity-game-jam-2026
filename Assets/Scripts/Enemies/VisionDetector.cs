@@ -9,7 +9,7 @@ public class VisionDetector : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            spotCoroutine = StartCoroutine(SpotPlayerWithDelay(2f));
+            spotCoroutine = StartCoroutine(SpotPlayerWithDelay(0.5f));
         }
     }
 
