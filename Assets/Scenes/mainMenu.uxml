@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/maniMenu.uss?fileID=7433441132597879392&amp;guid=c75bff03f46ecf142ac491abf6a5a0a6&amp;type=3#maniMenu"/>
+    <ui:VisualElement name="menuRoot" class="menu-root" style="flex-grow: 1; background-color: rgb(0, 0, 0);">
+        <ui:VisualElement name="menuPanel" class="menuPanel" style="flex-grow: 1; width: 200px;">
+            <ui:Label text="Game" name="title" class="menuTitle" style="justify-content: flex-start; align-items: stretch; color: rgb(9, 8, 8); background-color: rgba(255, 255, 255, 0); height: 39px; -unity-font-style: bold;"/>
+            <ui:VisualElement name="buttons" class="menuButtons" style="flex-grow: 1; height: auto;">
+                <ui:Button text="Play" name="playButton" class="menuButton" style="color: rgb(0, 0, 0);"/>
+                <ui:Button text="Quit" name="quitButton" class="menuButton" style="color: rgb(0, 0, 0);"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
